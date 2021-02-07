@@ -25,4 +25,15 @@ class ApiTest extends TestCase
                 'message' => 'Invalid token'
             ]);
     }
+
+     /**
+     * Check if auth works
+     * @test
+     * @return void
+     */
+    public function auth_test()
+    {
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get('/api/v1?method=rates&params=usd,rub,eur');
+        $response->assertOk();
+    }
 }
