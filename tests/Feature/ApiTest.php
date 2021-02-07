@@ -33,7 +33,12 @@ class ApiTest extends TestCase
      */
     public function auth_test()
     {
-        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get('/api/v1?method=rates&params=usd,rub,eur');
-        $response->assertOk();
+        $url = '/api/v1?method=rates';
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $response->assertOk()
+            ->assertJson([
+                'status' => 'success',
+                'code' => 200
+            ]);
     }
 }

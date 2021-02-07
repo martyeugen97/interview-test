@@ -19,6 +19,7 @@ class ApiAuthentication
         $token = $request->bearerToken();
         if($token == env('API_TOKEN'))
             return $next($request);
+
         $data = [
             'status' => 'error',
             'code' => 403,
