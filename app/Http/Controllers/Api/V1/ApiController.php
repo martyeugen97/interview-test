@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class ApiController extends Controller
 {
@@ -17,5 +17,4 @@ class ApiController extends Controller
 
         return response()->json($data, 403);
     }
-
 }
