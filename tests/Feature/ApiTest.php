@@ -143,4 +143,22 @@ class ApiTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, ['method' => 'convert']);
         $response->assertOk();
     }
+
+    /**
+     * Protect index method from being called 
+     * @test
+     * @return void
+     */
+
+    public function index_method_should_not_be_allowed()
+    {
+        $url = '/api/v1?method=index';
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $response->assertStatus(400)
+            ->assertExactJson([
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Bad request'
+            ]);
+    }
 }

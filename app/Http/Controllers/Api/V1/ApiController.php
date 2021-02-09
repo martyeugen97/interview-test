@@ -6,14 +6,14 @@ use App\Helpers\BitcoinApiHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use function PHPUnit\Framework\returnValue;
-
 class ApiController extends Controller
 {
+    private $supported_methods = ['rates', 'convert'];
+
     public function index(Request $request)
     {
         $method = $request->input('method');
-        if(!method_exists($this, $method))
+        if(!method_exists($this, $method) || !in_array($method, $this->supported_methods))
         {
             $data = [
                 'status' => 'error',
