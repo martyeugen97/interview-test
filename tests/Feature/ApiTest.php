@@ -102,4 +102,18 @@ class ApiTest extends TestCase
         $this->assertTrue(self::arrayEqualsIgnoreOrder(array_keys($rates), $currencies));
         $this->assertTrue(self::isArraySorted($rates));
     }
+
+    /**
+     * Same works without params
+     * @test
+     * @return void
+     */
+
+    public function rates_works_without_params()
+    {
+        $url = '/api/v1?method=rates';
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $rates = $response->json('data');
+        $this->assertTrue(self::isArraySorted($rates));
+    }
 }
