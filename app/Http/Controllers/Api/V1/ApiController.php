@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\BitcoinApiHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
+use function PHPUnit\Framework\returnValue;
 
 class ApiController extends Controller
 {
-    const BITCOIN_TICKER_URL = 'https://blockchain.info/ticker';
-
-    private $bitcoin_rates;
-
     public function index(Request $request)
     {
         $method = $request->input('method');
@@ -23,25 +20,32 @@ class ApiController extends Controller
                 'code' => 400,
                 'message' => 'Bad request'
             ];
-
+            
             return response()->json($data, 400);
         }
-
-        $response = Http::get(self::BITCOIN_TICKER_URL);
-        if(!$response->ok())
-            abort(503);
-
-        $this->bitcoin_rates = $response->json();
-        if(is_array($this->bitcoin_rates)) {
-            return $this->rates(null);
+        
+        $rates = BitcoinApiHelper::getBitcoinBuyRates();
+        if($rates)
+        {
+            return $this->rates($rates, $request->input('params'));
         }
     }
 
-    private function rates($params)
+    private function rates($rates, $params)
     {
+        if($params)
+        {
+            $responseCurrencies = explode(',', $params);
+            $rates = array_filter($rates, function($currency) use ($responseCurrencies) {
+                return in_array($currency, $responseCurrencies);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        asort($rates);
         $data = [
             'status' => 'success',
             'code' => 200,
+            'data' => $rates
         ];
 
         return response()->json($data, 200);

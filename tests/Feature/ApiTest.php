@@ -9,6 +9,34 @@ use Tests\TestCase;
 class ApiTest extends TestCase
 {
     /**
+     * Helper function
+     * @param array $array
+     * @return bool
+     */
+    private static function isArraySorted(array $array)
+    {
+        $values = array_values($array);
+        for($i = 0; $i < count($values) - 1; ++$i) {
+            if($values[$i] > $values[$i+1]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Helper function that checks if arrays are equal, ignoring order
+     * @param array $array1
+     * @param array $array2
+     * @return bool
+     */
+    private static function arrayEqualsIgnoreOrder(array $array1, array $array2)
+    {
+        return !array_diff($array1, $array2) && (count($array1) === count($array2));
+    }
+
+    /**
      * API requires a bearer token
      * @test
      * @return void
@@ -57,5 +85,21 @@ class ApiTest extends TestCase
                 'code' => 400,
                 'message' => 'Bad request'
             ]);
+    }
+
+    /**
+     * Server returns bitcoin rates and sorts them
+     * @test
+     * @return void
+     */
+
+    public function rates_are_returned_sorted()
+    {
+        $currencies = ['usd', 'rub', 'eur', 'gbp', 'jpy'];
+        $url = '/api/v1?method=rates&params=' . implode(',', $currencies);
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $rates = $response->json('data');
+        $this->assertTrue(self::arrayEqualsIgnoreOrder(array_keys($rates), $currencies));
+        $this->assertTrue(self::isArraySorted($rates));
     }
 }
