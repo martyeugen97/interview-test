@@ -95,7 +95,7 @@ class ApiTest extends TestCase
 
     public function rates_are_returned_sorted()
     {
-        $currencies = ['usd', 'rub', 'eur', 'gbp', 'jpy'];
+        $currencies = ['USD', 'RUB', 'EUR', 'GBP', 'JPY'];
         $url = '/api/v1?method=rates&params=' . implode(',', $currencies);
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $rates = $response->json('data');

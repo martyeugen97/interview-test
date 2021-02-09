@@ -20,7 +20,7 @@ class BitcoinApiHelper
         $returnData = array();
         foreach($response->json() as $currency => $rate)
         {
-            $returnData[Str::lower($currency)] = self::withComission($rate['buy']);
+            $returnData[$currency] = self::withComission($rate['buy']);
         }
 
         return $returnData; 
