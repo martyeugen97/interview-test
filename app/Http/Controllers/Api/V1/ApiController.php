@@ -27,12 +27,13 @@ class ApiController extends Controller
         $rates = BitcoinApiHelper::getBitcoinBuyRates();
         if($rates)
         {
-            return call_user_func_array([$this, $method], [$rates, $request->input('params')]);
+            return call_user_func_array([$this, $method], [$request, $rates]);
         }
     }
 
-    private function rates($rates, $params)
+    private function rates(Request $request, $rates)
     {
+        $params = $request->input('params');
         if($params)
         {
             $responseCurrencies = explode(',', $params);
