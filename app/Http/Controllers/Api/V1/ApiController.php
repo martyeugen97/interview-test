@@ -27,7 +27,7 @@ class ApiController extends Controller
         $rates = BitcoinApiHelper::getBitcoinBuyRates();
         if($rates)
         {
-            return $this->rates($rates, $request->input('params'));
+            return call_user_func_array([$this, $method], [$rates, $request->input('params')]);
         }
     }
 
@@ -49,5 +49,10 @@ class ApiController extends Controller
         ];
 
         return response()->json($data, 200);
+    }
+
+    private function convert($rates)
+    {
+
     }
 }

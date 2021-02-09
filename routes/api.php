@@ -18,4 +18,5 @@ use App\Http\Controllers\Api\V1\ApiController;
 
 Route::prefix('v1')->group(function() {
     Route::get('', [ApiController::class, 'index']);
+    Route::post('', [ApiController::class, 'index']);
 });

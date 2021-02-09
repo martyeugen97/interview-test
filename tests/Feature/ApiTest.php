@@ -130,4 +130,17 @@ class ApiTest extends TestCase
         $rates = $response->json('data');
         $this->assertTrue(self::isArraySorted($rates));
     }
+
+    /**
+     * Calling convert doesn't break the API
+     * @test
+     * @return void
+     */
+
+    public function calling_convert()
+    {
+        $url = '/api/v1';
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, ['method' => 'convert']);
+        $response->assertOk();
+    }
 }
