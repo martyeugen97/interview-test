@@ -116,4 +116,18 @@ class ApiTest extends TestCase
         $rates = $response->json('data');
         $this->assertTrue(self::isArraySorted($rates));
     }
+
+    /**
+     * garbage in params shouldn't break the api
+     * @test
+     * @return void
+     */
+
+    public function garbage_in_params_test()
+    {
+        $url = '/api/v1?method=rates&params=eoifaihawifawofw';
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $rates = $response->json('data');
+        $this->assertTrue(self::isArraySorted($rates));
+    }
 }
