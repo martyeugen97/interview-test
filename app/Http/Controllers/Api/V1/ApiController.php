@@ -6,6 +6,7 @@ use App\Helpers\BitcoinApiHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\ArrayHelper;
 
 class ApiController extends Controller
 {
@@ -47,6 +48,10 @@ class ApiController extends Controller
             $rates = array_filter($rates, function($currency) use ($responseCurrencies) {
                 return in_array($currency, $responseCurrencies);
             }, ARRAY_FILTER_USE_KEY);
+
+            if(!ArrayHelper::arrayEqualsIgnoreOrder($responseCurrencies, array_keys($rates)))
+                return response()->json($responseCurrencies, 400);
+
         }
 
         if(!$rates)

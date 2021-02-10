@@ -2,8 +2,7 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Helpers\ArrayHelper;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
@@ -23,17 +22,6 @@ class ApiTest extends TestCase
         }
 
         return true;
-    }
-
-    /**
-     * Helper function that checks if arrays are equal, ignoring order
-     * @param array $array1
-     * @param array $array2
-     * @return bool
-     */
-    private static function arrayEqualsIgnoreOrder(array $array1, array $array2)
-    {
-        return !array_diff($array1, $array2) && (count($array1) === count($array2));
     }
 
     /**
@@ -97,8 +85,9 @@ class ApiTest extends TestCase
         $currencies = ['USD', 'RUB', 'EUR', 'GBP', 'JPY'];
         $url = '/api/v1?method=rates&params=' . implode(',', $currencies);
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $response->assertOk();
         $rates = $response->json('data');
-        $this->assertTrue(self::arrayEqualsIgnoreOrder(array_keys($rates), $currencies));
+        $this->assertTrue(ArrayHelper::arrayEqualsIgnoreOrder(array_keys($rates), $currencies));
         $this->assertTrue(self::isArraySorted($rates));
     }
 
@@ -117,7 +106,7 @@ class ApiTest extends TestCase
     }
 
     /**
-     * garbage in params shouldn't break the api
+     * Garbage in params shouldn't break the api
      * @test
      * @return void
      */
@@ -125,6 +114,18 @@ class ApiTest extends TestCase
     public function garbage_in_params_test()
     {
         $url = '/api/v1?method=rates&params=eoifaihawifawofw';
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
+        $response->assertStatus(400);
+    }
+
+    /**
+     * Rates must throw 400 if the currency is not supported
+     * @test
+     * @return void
+     */
+    public function wrong_currency_error()
+    {
+        $url = '/api/v1?method=rates&params=USD,EUR,ETH';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $response->assertStatus(400);
     }
