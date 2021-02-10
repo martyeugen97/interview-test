@@ -23,12 +23,13 @@ class ApiController extends Controller
             
             return response()->json($data, 400);
         }
-        
+
         $rates = BitcoinApiHelper::getBitcoinBuyRates();
-        if($rates)
-        {
-            return call_user_func_array([$this, $method], [$request, $rates]);
-        }
+        if(!$rates)
+            abort(503);
+
+        return call_user_func_array([$this, $method], [$request, $rates]);
+
     }
 
     private function rates(Request $request, $rates)
@@ -52,8 +53,46 @@ class ApiController extends Controller
         return response()->json($data, 200);
     }
 
-    private function convert($rates)
+    private function convert(Request $request, $rates)
     {
+        $crypto = ['BTC'];
+        $rules = [
+            'method' => 'required',
+            'value' => 'required|min:0.01',
+            'currency_from' => 'required',
+            'currency_to' => 'required'
+        ];
 
+        $from = $request->input('currency_from');
+        $to = $request->input('currency_to');
+        $fromCryptoToFiat = in_array($from, $crypto);
+        if($fromCryptoToFiat)
+        {
+            $rules['currency_from'] .= '|in:' . implode(',', $crypto);
+            $rules['currency_to'] .= '|not-in:' . implode(',', $crypto);
+        }
+        else
+        {
+            $rules['currency_to'] .= '|in:' . implode(',', $crypto);
+            $rules['currency_from'] .= '|not-in:' . implode(',', $crypto);
+        }
+
+        $request->validate($rules);
+        $value = $request->input('value');
+        $rate = $fromCryptoToFiat ? $rates[$to] : $rates[$from];
+        $converted_value = round($rate * $value, $fromCryptoToFiat ? 2 : 10);
+        $data = [
+            'status' => 'success',
+            'code' => 200,
+            'data' => [
+                    'currency_from' => $from,
+                    'currency_to' => $to,
+                    'value' => $value,
+                    'converted_value' => $converted_value,
+                    'rate' => $rate
+                ]
+            ];
+
+        return response()->json($data, 200);
     }
 }

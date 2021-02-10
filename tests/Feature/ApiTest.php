@@ -137,10 +137,18 @@ class ApiTest extends TestCase
      * @return void
      */
 
-    public function calling_convert()
+    public function convert_method()
     {
+        $this->withoutExceptionHandling();
         $url = '/api/v1';
-        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, ['method' => 'convert']);
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'BTC',
+            'currency_to' => 'USD',
+            'value' => 1
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
         $response->assertOk();
     }
 
