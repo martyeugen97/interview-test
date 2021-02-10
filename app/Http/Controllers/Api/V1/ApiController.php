@@ -85,7 +85,18 @@ class ApiController extends Controller
             $rules['currency_from'] .= '|not-in:' . implode(',', $crypto);
         }
 
-        $request->validate($rules);
+        $validator = Validator::make($request->all(), $rules);
+        if($validator->fails())
+        {
+            $data = [
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Bad request'
+            ];
+
+            return response()->json($data, 400);
+        }
+
         $value = $request->input('value');
         $rate = $fromCryptoToFiat ? $rates[$to] : $rates[$from];
         $converted_value = round($rate * $value, $fromCryptoToFiat ? 2 : 10);

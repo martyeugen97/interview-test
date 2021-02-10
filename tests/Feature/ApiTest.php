@@ -132,7 +132,7 @@ class ApiTest extends TestCase
     }
 
     /**
-     * Calling convert doesn't break the API
+     * Testing convert method
      * @test
      * @return void
      */
@@ -168,5 +168,47 @@ class ApiTest extends TestCase
                 'code' => 400,
                 'message' => 'Method is not supported'
             ]);
+    }
+
+    /**
+     * Checks if we are tryting to convert fiat to fiat
+     * @test
+     * @return void
+     */
+
+    public function fiat_to_fiat_conversions_are_not_supported()
+    {
+        $this->withoutExceptionHandling();
+        $url = '/api/v1';
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'EUR',
+            'currency_to' => 'USD',
+            'value' => 1
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(400);
+    }
+
+     /**
+     * Checks if we are tryting to convert crypto to crypto
+     * @test
+     * @return void
+     */
+
+    public function crypto_to_crypto_conversions_are_not_supported()
+    {
+        $this->withoutExceptionHandling();
+        $url = '/api/v1';
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'BTC',
+            'currency_to' => 'BTC',
+            'value' => 1
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(400);
     }
 }
