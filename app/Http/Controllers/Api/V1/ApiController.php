@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Validator;
 class ApiController extends Controller
 {
     private $supported_methods = ['rates', 'convert'];
+    private $badRequestData = [
+        'status' => 'error',
+        'code' => 400,
+        'message' => 'Bad request'
+    ];
 
     public function index(Request $request)
     {
@@ -19,15 +24,8 @@ class ApiController extends Controller
         );
 
         if($validator->fails())
-        {
-            $data = [
-                'status' => 'error',
-                'code' => 400,
-                'message' => 'Method is not supported'
-            ];
-            
-            return response()->json($data, 400);
-        }
+            return response()->json($this->badRequestData, 400);
+
 
         $method = $request->input('method');
         if(!method_exists($this, $method))
@@ -87,15 +85,7 @@ class ApiController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
         if($validator->fails())
-        {
-            $data = [
-                'status' => 'error',
-                'code' => 400,
-                'message' => 'Bad request'
-            ];
-
-            return response()->json($data, 400);
-        }
+            return response()->json($this->badRequestData, 400);
 
         $value = $request->input('value');
         $rate = $fromCryptoToFiat ? $rates[$to] : $rates[$from];

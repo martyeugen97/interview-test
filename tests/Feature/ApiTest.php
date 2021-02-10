@@ -80,10 +80,9 @@ class ApiTest extends TestCase
         $url = '/api/v1';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $response->assertStatus(400)
-            ->assertExactJson([
+            ->assertJson([
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Method is not supported'
             ]);
     }
 
@@ -163,10 +162,9 @@ class ApiTest extends TestCase
         $url = '/api/v1?method=index';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $response->assertStatus(400)
-            ->assertExactJson([
+            ->assertJson([
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Method is not supported'
             ]);
     }
 
