@@ -75,7 +75,7 @@ class ApiTest extends TestCase
      * @test
      * @return void
      */
-    public function bad_request()
+    public function empty_method()
     {
         $url = '/api/v1';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
@@ -83,7 +83,7 @@ class ApiTest extends TestCase
             ->assertExactJson([
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Bad request'
+                'message' => 'Method is not supported'
             ]);
     }
 
@@ -166,7 +166,7 @@ class ApiTest extends TestCase
             ->assertExactJson([
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Bad request'
+                'message' => 'Method is not supported'
             ]);
     }
 }

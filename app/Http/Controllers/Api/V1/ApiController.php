@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Helpers\BitcoinApiHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
@@ -12,24 +13,31 @@ class ApiController extends Controller
 
     public function index(Request $request)
     {
-        $method = $request->input('method');
-        if(!method_exists($this, $method) || !in_array($method, $this->supported_methods))
+        $validator = Validator::make(
+            [ 'method' => $request->input('method') ],
+            [ 'method' => 'required|in:' . implode(',', $this->supported_methods)]
+        );
+
+        if($validator->fails())
         {
             $data = [
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'Bad request'
+                'message' => 'Method is not supported'
             ];
             
             return response()->json($data, 400);
         }
+
+        $method = $request->input('method');
+        if(!method_exists($this, $method))
+            abort(501);
 
         $rates = BitcoinApiHelper::getBitcoinBuyRates();
         if(!$rates)
             abort(503);
 
         return call_user_func_array([$this, $method], [$request, $rates]);
-
     }
 
     private function rates(Request $request, $rates)
