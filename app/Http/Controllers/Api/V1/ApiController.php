@@ -93,6 +93,7 @@ class ApiController extends Controller
         $value = $request->input('value');
         $rate = $fromCryptoToFiat ? $rates[$to] : $rates[$from];
         $converted_value = $fromCryptoToFiat ? number_format($value * $rate, 2) : number_format($value / $rate, 10);
+
         $data = [
             'status' => 'success',
             'code' => 200,
@@ -100,8 +101,8 @@ class ApiController extends Controller
                     'currency_from' => $from,
                     'currency_to' => $to,
                     'value' => (float)$value,
-                    'converted_value' => rtrim($converted_value),
-                    'rate' => $rate
+                    'converted_value' => $converted_value,
+                    'rate' => number_format($rate, 2)
                 ]
             ];
 
