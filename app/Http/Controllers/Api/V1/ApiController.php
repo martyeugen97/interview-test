@@ -64,7 +64,7 @@ class ApiController extends Controller
         $crypto = ['BTC'];
         $rules = [
             'method' => 'required',
-            'value' => 'required|min:0.01',
+            'value' => 'required|numeric|min:0.01',
             'currency_from' => 'required',
             'currency_to' => 'required'
         ];
@@ -89,15 +89,15 @@ class ApiController extends Controller
 
         $value = $request->input('value');
         $rate = $fromCryptoToFiat ? $rates[$to] : $rates[$from];
-        $converted_value = round($rate * $value, $fromCryptoToFiat ? 2 : 10);
+        $converted_value = $fromCryptoToFiat ? number_format($value * $rate, 2) : number_format($value / $rate, 10);
         $data = [
             'status' => 'success',
             'code' => 200,
             'data' => [
                     'currency_from' => $from,
                     'currency_to' => $to,
-                    'value' => $value,
-                    'converted_value' => $converted_value,
+                    'value' => (float)$value,
+                    'converted_value' => rtrim($converted_value),
                     'rate' => $rate
                 ]
             ];
