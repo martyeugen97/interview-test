@@ -230,4 +230,22 @@ class ApiTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
         $response->assertStatus(400);
     }
+
+    /**
+     * Checks if proper http method is used
+     * @test
+     * @return void
+     */
+
+    public function wrong_request_method()
+    {
+        $url = '/api/v1';
+        $data = [
+            'method' => 'rates',
+            'params' => 'USD,EUR',
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(400);
+    }
 }

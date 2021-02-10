@@ -41,6 +41,9 @@ class ApiController extends Controller
 
     private function rates(Request $request, $rates)
     {
+        if($request->method() != 'GET')
+            return response()->json($this->badRequestData, 400);
+
         $params = $request->input('params');
         if($params)
         {
@@ -69,6 +72,9 @@ class ApiController extends Controller
 
     private function convert(Request $request, $rates)
     {
+        if($request->method() != 'POST')
+            return response()->json($this->badRequestData, 400);
+
         $crypto = ['BTC'];
         $rules = [
             'method' => 'required',
