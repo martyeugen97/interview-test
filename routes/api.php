@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ApiController;
+use App\Http\Middleware\ApiAuthentication;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +16,6 @@ use App\Http\Controllers\Api\V1\ApiController;
 */
 
 
-Route::prefix('v1')->group(function() {
+Route::prefix('v1')->middleware(ApiAuthentication::class)->group(function() {
     Route::match(['get', 'post'], '', [ApiController::class, 'index']);
 });
