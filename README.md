@@ -11,3 +11,15 @@ b.author as Author, GROUP_CONCAT(b.name SEPARATOR ', ') as Books
 GROUP BY ub.user_id
 HAVING (COUNT(ub.user_id) = 2 AND COUNT(DISTINCT b.author) = 1);
 ```
+### How to install and test:
+
+```
+git clone https://github.com/MartynEugene/interview-test.git
+cd interview-test/
+composer install
+cp .env.example .env
+echo "API_TOKEN=password" >> .env
+php artisan test
+```
+
+There is a small test suit, check it before manual testing
