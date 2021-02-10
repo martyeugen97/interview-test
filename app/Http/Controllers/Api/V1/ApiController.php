@@ -44,10 +44,10 @@ class ApiController extends Controller
         if($request->method() != 'GET')
             return response()->json($this->badRequestData, 400);
 
-        $params = $request->input('params');
-        if($params)
+        $currency = $request->input('currency');
+        if($currency)
         {
-            $responseCurrencies = explode(',', $params);
+            $responseCurrencies = explode(',', $currency);
             $rates = array_filter($rates, function($currency) use ($responseCurrencies) {
                 return in_array($currency, $responseCurrencies);
             }, ARRAY_FILTER_USE_KEY);

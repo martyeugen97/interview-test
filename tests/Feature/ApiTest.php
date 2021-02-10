@@ -32,7 +32,7 @@ class ApiTest extends TestCase
     public function api_requires_auth()
     {
         $this->withoutExceptionHandling();
-        $response = $this->get('/api/v1?method=rates&params=usd,rub,eur');
+        $response = $this->get('/api/v1?method=rates&currency=usd,rub,eur');
 
         $response->assertForbidden()
             ->assertExactJson([
@@ -83,7 +83,7 @@ class ApiTest extends TestCase
     public function rates_are_returned_sorted()
     {
         $currencies = ['USD', 'RUB', 'EUR', 'GBP', 'JPY'];
-        $url = '/api/v1?method=rates&params=' . implode(',', $currencies);
+        $url = '/api/v1?method=rates&currency=' . implode(',', $currencies);
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $response->assertOk();
         $rates = $response->json('data');
@@ -113,7 +113,7 @@ class ApiTest extends TestCase
 
     public function garbage_in_params_test()
     {
-        $url = '/api/v1?method=rates&params=eoifaihawifawofw';
+        $url = '/api/v1?method=rates&currency=eoifaihawifawofw';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $response->assertStatus(400);
     }
@@ -125,7 +125,7 @@ class ApiTest extends TestCase
      */
     public function wrong_currency_error()
     {
-        $url = '/api/v1?method=rates&params=USD,EUR,ETH';
+        $url = '/api/v1?method=rates&currency=USD,EUR,ETH';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
         $response->assertStatus(400);
     }
