@@ -126,8 +126,7 @@ class ApiTest extends TestCase
     {
         $url = '/api/v1?method=rates&params=eoifaihawifawofw';
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->get($url);
-        $rates = $response->json('data');
-        $this->assertTrue(self::isArraySorted($rates));
+        $response->assertStatus(400);
     }
 
     /**
@@ -206,6 +205,27 @@ class ApiTest extends TestCase
             'value' => 1
         ];
 
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(400);
+    }
+
+    /**
+     * Convert value cannot be below 0.01
+     * @test
+     * @return void
+     */
+
+    public function convert_value_too_low()
+    {
+        $this->withoutExceptionHandling();
+        $url = '/api/v1';
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'USD',
+            'currency_to' => 'BTC',
+            'value' => 0.009
+        ];
+    
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
         $response->assertStatus(400);
     }

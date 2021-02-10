@@ -49,6 +49,9 @@ class ApiController extends Controller
             }, ARRAY_FILTER_USE_KEY);
         }
 
+        if(!$rates)
+            return response()->json($this->badRequestData, 400);
+
         asort($rates);
         $data = [
             'status' => 'success',
