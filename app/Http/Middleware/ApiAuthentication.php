@@ -17,8 +17,9 @@ class ApiAuthentication
     public function handle(Request $request, Closure $next)
     {
         $token = $request->bearerToken();
-        if($token == env('API_TOKEN'))
+        if ($token == env('API_TOKEN')) {
             return $next($request);
+        }
 
         $data = [
             'status' => 'error',

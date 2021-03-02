@@ -15,8 +15,8 @@ class ApiTest extends TestCase
     private static function isArraySorted(array $array)
     {
         $values = array_values($array);
-        for($i = 0; $i < count($values) - 1; ++$i) {
-            if($values[$i] > $values[$i+1]) {
+        for ($i = 0; $i < count($values) - 1; ++$i) {
+            if ($values[$i] > $values[$i+1]) {
                 return false;
             }
         }
@@ -152,7 +152,7 @@ class ApiTest extends TestCase
     }
 
     /**
-     * Protect index method from being called 
+     * Protect index method from being called
      * @test
      * @return void
      */
@@ -226,7 +226,7 @@ class ApiTest extends TestCase
             'currency_to' => 'BTC',
             'value' => 0.009
         ];
-    
+
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
         $response->assertStatus(400);
     }
@@ -243,6 +243,62 @@ class ApiTest extends TestCase
         $data = [
             'method' => 'rates',
             'params' => 'USD,EUR',
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(400);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+
+    public function convert_from_crypto_to_fiat()
+    {
+        $url = '/api/v1';
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'BTC',
+            'currency_to' => 'USD',
+            'value' => 100
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+
+    public function convert_fiat_to_crypto()
+    {
+        $url = '/api/v1';
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'EUR',
+            'currency_to' => 'BTC',
+            'value' => 10000
+        ];
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test convert method must check for bad params
+     * @return void
+     */
+    public function invalid_params_convert()
+    {
+        $url = '/api/v1';
+        $data = [
+            'method' => 'convert',
+            'currency_from' => 'EUR,RUB',
+            'currency_to' => 'BTC',
+            'value' => 10000
         ];
 
         $response = $this->withHeader('Authorization', 'Bearer ' . env('API_TOKEN'))->post($url, $data);
