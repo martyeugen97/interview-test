@@ -97,7 +97,6 @@ class ApiController extends Controller
                     'rate' => $rate
                 ]
         ];
-
         return response()->json($data, 200);
     }
 }
